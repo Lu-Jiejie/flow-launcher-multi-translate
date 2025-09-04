@@ -40,7 +40,6 @@ export const serviceNamesMap: Record<string, { en: string, tr: string, zh: strin
   youdao: { en: 'Youdao Translate', tr: 'Youdao Çeviri', zh: '有道翻译' },
 }
 
-
 const services: Record<string, {
   translate: (text: string, from: string, to: string, axiosInstance: AxiosInstance, _options: Settings) => Promise<string>
   languagesMap: Record<string, string>

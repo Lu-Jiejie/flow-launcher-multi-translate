@@ -11,4 +11,6 @@ export default antfu(
       // override rules here
     },
   },
+).removeRules(
+  'test/no-only-tests',
 )

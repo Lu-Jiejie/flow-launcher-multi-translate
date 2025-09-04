@@ -28,8 +28,9 @@ export function parseSettings(settings: Record<string, string>): Settings {
   const targetLanguageCode = settings.targetLanguageCode as LanguageCode || 'zh'
   const languagePairs = (settings.languagePairs || '').split('\n').map(i => i.trim()).filter(i => i)
   const triggerKeyword = settings.triggerKeyword || 'tr'
-  const interfaceLanguage = settings.interfaceLanguage === 'English' ? 'en' :
-  settings.interfaceLanguage === 'Turkish' ? 'tr' : 'zh'
+  const interfaceLanguage = settings.interfaceLanguage === 'English'
+    ? 'en'
+    : settings.interfaceLanguage === 'Türkçe' ? 'tr' : 'zh'
 
   const serviceConfigs: Record<string, string> = {}
   settings.serviceConfigs
@@ -66,16 +67,3 @@ export function parseSettings(settings: Record<string, string>): Settings {
     mTranServer,
   }
 }
-
-// const defaultSettings: Settings = {
-//   deeplxUrl: '',
-//   services: [
-//     'youdao',
-//     'google',
-//     'bing',
-//   ],
-//   proxyUrl: '',
-//   requestTimeout: 3000,
-//   sourceLanguage: 'auto',
-//   targetLanguage: 'en',
-// }

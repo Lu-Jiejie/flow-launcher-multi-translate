@@ -95,7 +95,6 @@ export const languageCodesArr = [
   'ca',
   'zh',
   'zh_hant',
-  'zh-Hans',
   'hr',
   'cs',
   'da',
