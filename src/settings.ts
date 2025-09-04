@@ -8,7 +8,7 @@ export interface Settings {
   targetLanguageCode: LanguageCode
   languagePairs: string[]
   triggerKeyword: string
-  interfaceLanguage: 'en' | 'zh'
+  interfaceLanguage: 'en' | 'tr' | 'zh'
   deepLX: {
     url: string
   }
@@ -28,7 +28,8 @@ export function parseSettings(settings: Record<string, string>): Settings {
   const targetLanguageCode = settings.targetLanguageCode as LanguageCode || 'zh'
   const languagePairs = (settings.languagePairs || '').split('\n').map(i => i.trim()).filter(i => i)
   const triggerKeyword = settings.triggerKeyword || 'tr'
-  const interfaceLanguage = settings.interfaceLanguage === 'English' ? 'en' : 'zh'
+  const interfaceLanguage = settings.interfaceLanguage === 'English' ? 'en' :
+  settings.interfaceLanguage === 'Turkish' ? 'tr' : 'zh'
 
   const serviceConfigs: Record<string, string> = {}
   settings.serviceConfigs

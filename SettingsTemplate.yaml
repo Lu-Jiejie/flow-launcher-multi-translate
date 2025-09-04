@@ -8,6 +8,7 @@ body:
         Language for the plugin interface.
       options:
         - English
+        - Türkçe
         - 简体中文
       defaultValue: English
 

@@ -13,15 +13,15 @@ import { parseSettings } from './settings'
 const _dirname = path.resolve((path.dirname(fileURLToPath(import.meta.url))), '..')
 const assetsPath = path.join(_dirname, 'assets')
 
-const messagesMap: Record<string, { en: string, zh: string }> = {
-  unsupportedSourceLanguage: { en: 'Unsupported source language', zh: '不支持的源语言' },
-  unsupportedSourceLanguageSubtitle: { en: 'Please check your configuration.', zh: '请检查您的配置。' },
-  unsupportedTargetLanguage: { en: 'Unsupported target language', zh: '不支持的目标语言' },
-  unsupportedTargetLanguageSubtitle: { en: 'Please check your configuration.', zh: '请检查您的配置。' },
-  noServicesConfigured: { en: 'No services configured', zh: '未配置翻译服务' },
-  noServicesConfiguredSubtitle: { en: 'Please check your configuration.', zh: '请检查您的配置。' },
-  defaultSelected: { en: 'Default selected: ', zh: '默认选择: ' },
-  quickSelect: { en: 'Quick select: ', zh: '快速选择: ' },
+const messagesMap: Record<string, { en: string, tr: string, zh: string }> = {
+  unsupportedSourceLanguage: { en: 'Unsupported source language', tr: 'Desteklenmeyen kaynak dil', zh: '不支持的源语言' },
+  unsupportedSourceLanguageSubtitle: { en: 'Please check your configuration.', tr: 'Lütfen yapılandırmanızı kontrol edin.', zh: '请检查您的配置。' },
+  unsupportedTargetLanguage: { en: 'Unsupported target language', tr: 'Desteklenmeyen hedef dil', zh: '不支持的目标语言' },
+  unsupportedTargetLanguageSubtitle: { en: 'Please check your configuration.', tr: 'Lütfen yapılandırmanızı kontrol edin.', zh: '请检查您的配置。' },
+  noServicesConfigured: { en: 'No services configured', tr: 'Yapılandırılmış hizmet yok', zh: '未配置翻译服务' },
+  noServicesConfiguredSubtitle: { en: 'Please check your configuration.', tr: 'Lütfen yapılandırmanızı kontrol edin.', zh: '请检查您的配置。' },
+  defaultSelected: { en: 'Default selected: ', tr: 'Varsayılan seçili: ', zh: '默认选择: ' },
+  quickSelect: { en: 'Quick select: ', tr: 'Hızlı seçim: ', zh: '快速选择: ' },
 }
 
 function main() {
