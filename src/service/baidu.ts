@@ -53,6 +53,7 @@ export const languagesMap: LanguagesMap = {
   pt_pt: 'pt',
   pt_br: 'pot',
   vi: 'vie',
+  ro: 'rom',
   id: 'id',
   th: 'th',
   ms: 'may',

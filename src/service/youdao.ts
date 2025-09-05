@@ -139,6 +139,7 @@ function decryptResponse(encrypted: string, key: Buffer, iv: Buffer) {
   return JSON.parse(decrypted)
 }
 
+// https://ai.youdao.com/DOCSIRMA/html/trans/api/wbfy/index.html
 export const languagesMap: LanguagesMap = {
   auto: 'auto',
   zh: 'zh-CHS',
@@ -150,12 +151,26 @@ export const languagesMap: LanguagesMap = {
   fr: 'fr',
   es: 'es',
   ru: 'ru',
+  am: 'am',
+  hy: 'hy',
+  ig: 'ig',
+  ka: 'ka',
+  ku: 'ku',
+  mi: 'mi',
+  mg: 'mg',
+  otq: 'otq',
+  sd: 'sd',
+  si: 'si',
+  sm: 'sm',
+  to: 'to',
+  ty: 'ty',
   de: 'de',
   it: 'it',
   tr: 'tr',
   pt_pt: 'pt',
   pt_br: 'pt',
   vi: 'vi',
+  ro: 'ro',
   id: 'id',
   th: 'th',
   ms: 'may',
