@@ -25,6 +25,7 @@ A Flow-Launcher plugin that translates text using multiple translation services.
 
 > [!IMPORTANT]
 > The above services are unofficial. Please use with discretion.
+> Some services may have request limits.
 
 ### Requires configuration
 - DeepLX (need personal URL)

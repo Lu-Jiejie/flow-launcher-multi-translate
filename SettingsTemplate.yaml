@@ -72,6 +72,16 @@ body:
 
   - type: input
     attributes:
+      name: translateDelay
+      label: Translate Delay
+      description: >
+        Delay in milliseconds before sending a request.
+
+        Useful for avoiding rate limits on some services.
+      defaultValue: '700'
+
+  - type: input
+    attributes:
       name: sourceLanguageCode
       label: Source Language Code
       description: >

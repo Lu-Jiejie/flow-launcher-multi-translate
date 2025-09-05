@@ -3,6 +3,7 @@ import type { LanguageCode } from './service/language'
 export interface Settings {
   services: string[]
   requestTimeout: number
+  translateDelay: number
   proxyUrl: string
   sourceLanguageCode: LanguageCode
   targetLanguageCode: LanguageCode
@@ -23,6 +24,9 @@ export function parseSettings(settings: Record<string, string>): Settings {
   let requestTimeout = Number.parseInt(settings.requestTimeout, 10)
   if (Number.isNaN(requestTimeout))
     requestTimeout = 3000
+  let translateDelay = Number.parseInt(settings.translateDelay, 10)
+  if (Number.isNaN(translateDelay))
+    translateDelay = 700
   const proxyUrl = settings.proxyUrl || ''
   const sourceLanguageCode = settings.sourceLanguageCode as LanguageCode || 'auto'
   const targetLanguageCode = settings.targetLanguageCode as LanguageCode || 'zh'
@@ -57,6 +61,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
   return {
     services,
     requestTimeout,
+    translateDelay,
     proxyUrl,
     sourceLanguageCode,
     targetLanguageCode,

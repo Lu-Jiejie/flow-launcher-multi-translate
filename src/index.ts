@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import clipboard from 'clipboardy'
 import { Flow } from 'flow-plugin'
 import { createAxiosInstance } from './axios'
+import { logger } from './logger'
 import { serviceNamesMap } from './service'
 import { services as servicesData } from './service/index'
 import { languageCodesArr, languageNamesMap } from './service/language'
@@ -110,6 +111,10 @@ function main() {
       })
       return
     }
+
+    // debounce
+    await new Promise(r => setTimeout(r, settings.translateDelay))
+    logger.info(Date.now())
 
     const translatePromises = settings.services.map(async (name) => {
       const service = servicesData[name]
