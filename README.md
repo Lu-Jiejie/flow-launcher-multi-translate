@@ -30,6 +30,7 @@ A Flow-Launcher plugin that translates text using multiple translation services.
 ### Requires configuration
 - DeepLX (need personal URL)
 - [MTranServer](https://github.com/xxnuo/MTranServer) (need personal URL and token)
+- [DeepL](https://www.deepl.com/translator) (set personal auth key, it will use the official API to translate)
 
 ## Features
 
