@@ -10,6 +10,9 @@ export interface Settings {
   languagePairs: string[]
   triggerKeyword: string
   interfaceLanguage: 'en' | 'tr' | 'zh'
+  deepL: {
+    key: string
+  }
   deepLX: {
     url: string
   }
@@ -50,6 +53,9 @@ export function parseSettings(settings: Record<string, string>): Settings {
       const value = i.slice(eqIndex + 1).trim()
       serviceConfigs[key] = value
     })
+  const deepL = {
+    key: serviceConfigs.DEEPL_KEY || '',
+  }
   const deepLX = {
     url: serviceConfigs.DEEPLX_URL || '',
   }
@@ -68,6 +74,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
     languagePairs,
     triggerKeyword,
     interfaceLanguage,
+    deepL,
     deepLX,
     mTranServer,
   }

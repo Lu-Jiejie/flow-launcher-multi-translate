@@ -3,7 +3,7 @@ import type { Settings } from '../settings'
 import type { LanguagesMap } from './language'
 import { formatError, getRandomInt } from '../utils'
 
-export async function translate(
+export async function translateByFree(
   text: string,
   from: string,
   to: string,
@@ -44,6 +44,59 @@ export async function translate(
   }
   catch (error) {
     return formatError(error)
+  }
+}
+
+export async function translateByKey(
+  text: string,
+  from: string,
+  to: string,
+  axiosInstance: AxiosInstance,
+  _options: Settings,
+): Promise<string> {
+  const deeplAuthKey = _options.deepL.key
+  const url = deeplAuthKey.endsWith(':fx')
+    ? 'https://api-free.deepl.com/v2/translate'
+    : deeplAuthKey.endsWith(':dp')
+      ? 'https://api.deepl-pro.com/v2/translate'
+      : 'https://api.deepl.com/v2/translate'
+
+  try {
+    const response = await axiosInstance.post(
+      url,
+      {
+        text,
+        source_lang: from !== 'auto' ? from.slice(0, 2).toUpperCase() : undefined,
+        target_lang: to.slice(0, 2).toUpperCase(),
+      },
+      {
+        headers: {
+          'Authorization': `DeepL-Auth-Key ${deeplAuthKey}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+
+    const result = response.data
+    return result.translations[0].text.trim()
+  }
+  catch (error) {
+    return formatError(error)
+  }
+}
+
+export async function translate(
+  text: string,
+  from: string,
+  to: string,
+  axiosInstance: AxiosInstance,
+  _options: Settings,
+): Promise<string> {
+  if (_options.deepL.key) {
+    return translateByKey(text, from, to, axiosInstance, _options)
+  }
+  else {
+    return translateByFree(text, from, to, axiosInstance, _options)
   }
 }
 

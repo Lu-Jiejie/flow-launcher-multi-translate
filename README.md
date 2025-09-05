@@ -72,6 +72,12 @@ MTRAN_SERVER_URL=YOUR_MTRAN_SERVER_URL
 MTRAN_SERVER_TOKEN=YOUR_MTRAN_SERVER_TOKEN
 ```
 
++ DeepL: If you set `DEEPL_KEY`, it will use the official DeepL API to translate, otherwise it will use the free web version (Free version may have request limits).
+
+```ini
+DEEPL_KEY=YOUR_DEEPL_KEY
+```
+
 ## Language Codes List
 
 + I can only ensure the common languages are supported.
