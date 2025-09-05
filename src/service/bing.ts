@@ -60,7 +60,7 @@ export async function translate(
 
 // https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support
 export const languagesMap: LanguagesMap = {
-  auto: 'auto',
+  auto: '',
   zh: 'zh-Hans',
   zh_hant: 'zh-Hant',
   yue: 'yue',
@@ -74,6 +74,7 @@ export const languagesMap: LanguagesMap = {
   it: 'it',
   tr: 'tr',
   pt_br: 'pt',
+  pt_pt: 'pt',
   vi: 'vi',
   id: 'id',
   th: 'th',

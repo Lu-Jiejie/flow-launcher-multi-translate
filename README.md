@@ -146,7 +146,6 @@ export const languageCodesArr = [
   'mi',
   'mr',
   'mn_cy',
-  'mn-Cyrl',
   'mn_mo',
   'my',
   'ne',
