@@ -4,7 +4,7 @@
   "Name": "MultiTranslate",
   "Description": "A Flow-Launcher plugin that translates text using multiple translation services.",
   "Author": "Lu-Jiejie",
-  "Version": "0.2.4",
+  "Version": "0.2.5",
   "Language": "typescript",
   "Website": "https://github.com/Lu-Jiejie/flow-launcher-multi-translate",
   "ExecuteFileName": "./dist/index.mjs",
