@@ -65,7 +65,7 @@ export async function translateByKey(
     const response = await axiosInstance.post(
       url,
       {
-        text,
+        text: [text],
         source_lang: from !== 'auto' ? from.slice(0, 2).toUpperCase() : undefined,
         target_lang: to.slice(0, 2).toUpperCase(),
       },
