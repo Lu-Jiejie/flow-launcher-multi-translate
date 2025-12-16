@@ -23,13 +23,13 @@ body:
 
         Without configuration:
 
-        Youdao, Google, Baidu, Bing, DeepL, DeepLX
+        Youdao, Google, Baidu, Bing, DeepL
 
         Tencent, Transmart, Caiyun, Volcegine
 
         Requires configuration:
 
-        DeepLX, MTranServer
+        DeepLX, MTranServer, OpenAI
 
       defaultValue: "youdao\ndeepl\ngoogle\nbing"
 
@@ -40,13 +40,25 @@ body:
       description: >
         Config services that require configuration
 
-        e.g. DeepLX, MTranServer
+        e.g. DeepLX, MTranServer, OpenAI
+
+        DeepLX:
 
         DEEPLX_URL=xxxx
+
+        MTranServer:
 
         MTRANSERVER_URL=xxxx
 
         MTRANSERVER_TOKEN=xxxx
+
+        OpenAI (compatible with Azure OpenAI and other OpenAI-compatible APIs):
+
+        OPENAI_API_KEY=sk-xxxx
+
+        OPENAI_BASE_URL=https://api.openai.com
+
+        OPENAI_MODEL=gpt-3.5-turbo
 
       defaultValue: ''
 

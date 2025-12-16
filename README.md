@@ -31,6 +31,7 @@ A Flow-Launcher plugin that translates text using multiple translation services.
 - DeepLX (need personal URL)
 - [MTranServer](https://github.com/xxnuo/MTranServer) (need personal URL and token)
 - [DeepL](https://www.deepl.com/translator) (set personal auth key, it will use the official API to translate)
+- [OpenAI](https://platform.openai.com/) (compatible with OpenAI, and other OpenAI-compatible APIs)
 
 ## Features
 
@@ -78,6 +79,17 @@ MTRAN_SERVER_TOKEN=YOUR_MTRAN_SERVER_TOKEN
 ```ini
 DEEPL_KEY=YOUR_DEEPL_KEY
 ```
+
++ OpenAI: Set your OpenAI API key, base URL, and model. Compatible with OpenAI, and other OpenAI-compatible APIs.
+
+```ini
+OPENAI_API_KEY=sk-YOUR_API_KEY
+OPENAI_BASE_URL=https://api.openai.com
+OPENAI_MODEL=gpt-3.5-turbo
+```
+
+> Note: `OPENAI_BASE_URL` defaults to `https://api.openai.com` if not set.
+> You can use other OpenAI-compatible API like [SiliconFlow](https://www.siliconflow.com/).
 
 ## Language Codes List
 

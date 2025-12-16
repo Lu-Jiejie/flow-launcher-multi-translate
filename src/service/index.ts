@@ -10,6 +10,7 @@ import * as mtranserver from './MTranServer'
 import * as tencent from './tencent'
 import * as transmart from './transmart'
 import * as volcengine from './volcengine'
+import * as openai from './openai'
 import * as youdao from './youdao'
 
 const serviceModules = {
@@ -23,6 +24,7 @@ const serviceModules = {
   tencent,
   transmart,
   volcengine,
+  openai,
   youdao,
 }
 
@@ -37,6 +39,7 @@ export const serviceNamesMap: Record<string, { en: string, tr: string, zh: strin
   tencent: { en: 'Tencent Translate', tr: 'Tencent Çeviri', zh: '腾讯翻译君' },
   transmart: { en: 'Transmart', tr: 'Transmart', zh: '腾讯交互翻译' },
   volcengine: { en: 'Volcengine Translate', tr: 'Volcengine Çeviri', zh: '火山翻译' },
+  openai: { en: 'OpenAI', tr: 'OpenAI', zh: 'OpenAI' },
   youdao: { en: 'Youdao Translate', tr: 'Youdao Çeviri', zh: '有道翻译' },
 }
 

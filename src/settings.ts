@@ -20,6 +20,11 @@ export interface Settings {
     url: string
     token: string
   }
+  openAI: {
+    key: string
+    baseUrl: string
+    model: string
+  }
 }
 
 export function parseSettings(settings: Record<string, string>): Settings {
@@ -63,6 +68,11 @@ export function parseSettings(settings: Record<string, string>): Settings {
     url: serviceConfigs.MTRANSERVER_URL || '',
     token: serviceConfigs.MTRANSERVER_TOKEN || '',
   }
+  const openAI = {
+    key: serviceConfigs.OPENAI_API_KEY || '',
+    baseUrl: serviceConfigs.OPENAI_BASE_URL || 'https://api.openai.com',
+    model: serviceConfigs.OPENAI_MODEL || 'gpt-3.5-turbo',
+  }
 
   return {
     services,
@@ -77,5 +87,6 @@ export function parseSettings(settings: Record<string, string>): Settings {
     deepL,
     deepLX,
     mTranServer,
+    openAI,
   }
 }
