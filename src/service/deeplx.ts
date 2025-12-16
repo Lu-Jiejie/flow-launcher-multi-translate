@@ -11,6 +11,12 @@ export async function translate(
   _options: Settings,
 ): Promise<string> {
   const deeplxUrl = _options.deepLX.url
+
+  // Validate required configuration
+  if (!deeplxUrl || deeplxUrl.trim() === '') {
+    return formatError(new Error('DeepLX: URL is not configured. Please set DEEPLX_URL in Service Configs.'))
+  }
+
   try {
     const response = await axiosInstance.post(
       deeplxUrl,

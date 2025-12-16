@@ -10,15 +10,25 @@ export async function translate(
   axiosInstance: AxiosInstance,
   _options: Settings,
 ): Promise<string> {
-  const url = _options.mTranServer.url.endsWith('/')
-    ? `${_options.mTranServer.url}translate`
-    : `${_options.mTranServer.url}/translate`
-
+  const url = _options.mTranServer.url
   const token = _options.mTranServer.token
+
+  // Validate required configuration
+  if (!url || url.trim() === '') {
+    return formatError(new Error('MTranServer: URL is not configured. Please set MTRANSERVER_URL in Service Configs.'))
+  }
+
+  if (!token || token.trim() === '') {
+    return formatError(new Error('MTranServer: Token is not configured. Please set MTRANSERVER_TOKEN in Service Configs.'))
+  }
+
+  const endpoint = url.endsWith('/')
+    ? `${url}translate`
+    : `${url}/translate`
 
   try {
     const response = await axiosInstance.post(
-      url,
+      endpoint,
       {
         text,
         from,

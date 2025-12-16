@@ -131,13 +131,18 @@ export async function translate(
   axiosInstance: AxiosInstance,
   _options: Settings,
 ): Promise<string> {
-  if (!_options.openAI.key) {
-    return formatError(new Error('OpenAI API key is not set.'))
-  }
-
+  const apiKey = _options.openAI.key
   const baseUrl = _options.openAI.baseUrl
   const model = _options.openAI.model
-  const apiKey = _options.openAI.key
+
+  // Validate required configuration
+  if (!apiKey || apiKey.trim() === '') {
+    return formatError(new Error('OpenAI: API key is not configured. Please set OPENAI_API_KEY in Service Configs.'))
+  }
+
+  if (!model || model.trim() === '') {
+    return formatError(new Error('OpenAI: Model is not configured. Please set OPENAI_MODEL in Service Configs.'))
+  }
 
   // Map language codes to full language names for better prompt understanding
   const fromLang = (languagesMap as Record<string, string>)[from] || from
