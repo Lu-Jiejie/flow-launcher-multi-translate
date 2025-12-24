@@ -39,18 +39,18 @@ A Flow-Launcher plugin that translates text using multiple translation services.
 
 ``` bash
 #  Basic usage
-tr <text>
+tr [text]
 
 # Specify a target language
-tr >fr <text>
+tr >fr [text]
 # or
-tr fr <text>
+tr fr [text]
 
 # Specify a source language
-tr zh> <text>
+tr zh> [text]
 
 # Both source and target languages
-tr zh>fr <text>
+tr zh>fr [text]
 ```
 
 Just wait for the translation results, and select one of them to copy into the clipboard.
