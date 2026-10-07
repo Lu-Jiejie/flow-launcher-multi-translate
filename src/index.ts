@@ -1,5 +1,6 @@
 import type { AxiosInstance } from 'axios'
 import type { LanguageCode } from './service/language'
+import type { Settings } from './settings'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import clipboard from 'clipboardy'
@@ -28,14 +29,25 @@ const messagesMap: Record<string, { en: string, tr: string, zh: string }> = {
 function main() {
   const flow = new Flow({ keepOrder: true })
   let axiosInstance: AxiosInstance | null = null
+  let axiosInstanceKey = ''
+
+  // The proxy and the timeout are baked into the axios instance, and plugin settings can be edited
+  // while the plugin is running, so the instance has to be rebuilt whenever either of them changes.
+  function getAxiosInstance(settings: Settings): AxiosInstance {
+    const key = `${settings.proxyUrl}|${settings.requestTimeout}`
+    if (axiosInstance === null || key !== axiosInstanceKey) {
+      axiosInstance = createAxiosInstance(settings)
+      axiosInstanceKey = key
+      logger.info(`Settings in use: proxy="${settings.proxyUrl || '(none)'}" timeout=${settings.requestTimeout}ms services=[${settings.services.join(', ')}]`)
+    }
+    return axiosInstance
+  }
 
   flow.on('query', async ({ prompt, settings: rawSettings }, response) => {
     const settings = parseSettings(rawSettings as any)
     const { interfaceLanguage } = settings
 
-    if (axiosInstance === null) {
-      axiosInstance = createAxiosInstance(settings)
-    }
+    const axiosInstance = getAxiosInstance(settings)
 
     // no services configured
     if (!settings.services || settings.services.length === 0) {
@@ -130,7 +142,7 @@ function main() {
         text,
         service.languagesMap[sourceLanguageCode],
         service.languagesMap[targetLanguageCode],
-        axiosInstance!,
+        axiosInstance,
         settings,
       )
       return { result, name }

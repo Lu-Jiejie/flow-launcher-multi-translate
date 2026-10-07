@@ -31,7 +31,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
   const services = (settings.services as string).split('\n').map(i => i.trim().toLowerCase()).filter(i => i)
   let requestTimeout = Number.parseInt(settings.requestTimeout, 10)
   if (Number.isNaN(requestTimeout))
-    requestTimeout = 3000
+    requestTimeout = 5000
   let translateDelay = Number.parseInt(settings.translateDelay, 10)
   if (Number.isNaN(translateDelay))
     translateDelay = 700

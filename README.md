@@ -15,7 +15,6 @@ A Flow-Launcher plugin that translates text using multiple translation services.
 ### Without configuration
 - [Youdao](https://fanyi.youdao.com/)
 - [Google](https://translate.google.com/)
-- [Baidu](https://fanyi.baidu.com/)
 - [Bing](https://www.bing.com/translator)
 - [DeepL](https://www.deepl.com/translator)
 - [Tencent](https://fanyi.qq.com/)

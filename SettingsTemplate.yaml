@@ -23,7 +23,7 @@ body:
 
         Without configuration:
 
-        Youdao, Google, Baidu, Bing, DeepL
+        Google, Youdao, Bing, DeepL
 
         Tencent, Transmart, Caiyun, Volcegine
 
@@ -31,7 +31,7 @@ body:
 
         DeepLX, MTranServer, OpenAI
 
-      defaultValue: "youdao\ndeepl\ngoogle\nbing"
+      defaultValue: "google\nyoudao"
 
   - type: textarea
     attributes:
@@ -80,7 +80,9 @@ body:
         Request timeout in milliseconds.
 
         Requests exceeding this time will be aborted.
-      defaultValue: '3000'
+
+        Services are requested together, so raise this if you use a slow proxy.
+      defaultValue: '5000'
 
   - type: input
     attributes:
