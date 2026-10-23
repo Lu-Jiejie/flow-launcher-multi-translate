@@ -16,6 +16,10 @@ const _dirname = path.resolve((path.dirname(fileURLToPath(import.meta.url))), '.
 const assetsPath = path.join(_dirname, 'assets')
 
 const messagesMap: Record<string, { en: string, tr: string, zh: string }> = {
+  clipboard: { en: 'Translate clipboard', tr: 'Panoyu çevir', zh: '翻译剪贴板内容' },
+  clipboardHint: { en: 'Translate complete clipboard text, including line breaks', tr: 'Satır sonları dahil pano metnini çevir', zh: '翻译剪贴板中的完整文本，保留换行' },
+  clipboardEmpty: { en: 'Clipboard contains no text', tr: 'Panoda metin yok', zh: '剪贴板中没有文本' },
+  clipboardError: { en: 'Unable to read clipboard', tr: 'Pano okunamadı', zh: '无法读取剪贴板' },
   unsupportedSourceLanguage: { en: 'Unsupported source language', tr: 'Desteklenmeyen kaynak dil', zh: '不支持的源语言' },
   unsupportedSourceLanguageSubtitle: { en: 'Please check your configuration.', tr: 'Lütfen yapılandırmanızı kontrol edin.', zh: '请检查您的配置。' },
   unsupportedTargetLanguage: { en: 'Unsupported target language', tr: 'Desteklenmeyen hedef dil', zh: '不支持的目标语言' },
@@ -77,11 +81,37 @@ function main() {
       return
     }
 
+    // Parse the query before reading the clipboard so its contents remain plain text.
+    const { sourceLanguageCode, targetLanguageCode, text: queryText } = parsePrompt(prompt, settings.sourceLanguageCode, settings.targetLanguageCode)
+    let text = queryText
+    const useClipboard = text.trim() === '/clipboard' || (prompt.trim() === '' && settings.autoTranslateClipboard)
+    if (useClipboard) {
+      try {
+        text = await clipboard.read()
+      }
+      catch {
+        response.add({ title: messagesMap.clipboardError[interfaceLanguage], subtitle: '', icoPath: `${assetsPath}/warning.png` })
+        return
+      }
+      if (!text.trim()) {
+        response.add({ title: messagesMap.clipboardEmpty[interfaceLanguage], subtitle: '', icoPath: `${assetsPath}/info.png` })
+        return
+      }
+    }
+
+    const clipboardItem = {
+      title: messagesMap.clipboard[interfaceLanguage],
+      subtitle: messagesMap.clipboardHint[interfaceLanguage],
+      icoPath: `${assetsPath}/info.png`,
+      jsonRPCAction: Flow.Actions.changeQuery(`${settings.triggerKeyword} /clipboard`, { requery: true }),
+    }
+
     // no prompt and show quick select: language pairs
     if (
       settings.languagePairs
       && settings.languagePairs.length > 0
       && prompt.trim().length === 0
+      && !useClipboard
     ) {
       // filter illegal language pairs
       const validPairs = settings.languagePairs.filter((pair) => {
@@ -109,18 +139,19 @@ function main() {
             jsonRPCAction: Flow.Actions.changeQuery(`${settings.triggerKeyword} ${pair} `, { requery: true }),
           }
         }),
+        clipboardItem,
       )
       return
     }
 
-    // parse prompt to prefix and text
-    const { sourceLanguageCode, targetLanguageCode, text } = parsePrompt(prompt, settings.sourceLanguageCode, settings.targetLanguageCode)
     if (!text || text.trim().length === 0) {
       response.add({
         title: `${languageNamesMap[sourceLanguageCode][interfaceLanguage]} → ${languageNamesMap[targetLanguageCode][interfaceLanguage]}`,
         subtitle: `${messagesMap.defaultSelected[interfaceLanguage]} ${sourceLanguageCode} → ${targetLanguageCode}`,
         icoPath: `${assetsPath}/info.png`,
       })
+      if (prompt.trim() === '')
+        response.add(clipboardItem)
       return
     }
 

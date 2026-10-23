@@ -62,6 +62,16 @@ body:
 
       defaultValue: ''
 
+  - type: checkbox
+    attributes:
+      name: autoTranslateClipboard
+      label: Automatically Translate Clipboard
+      description: >
+        Translate clipboard text when only the trigger keyword is entered.
+
+        Sends clipboard text to the configured translation services.
+      defaultValue: false
+
   - type: input
     attributes:
       name: proxyUrl

@@ -9,6 +9,7 @@ export interface Settings {
   targetLanguageCode: LanguageCode
   languagePairs: string[]
   triggerKeyword: string
+  autoTranslateClipboard: boolean
   interfaceLanguage: 'en' | 'tr' | 'zh'
   deepL: {
     key: string
@@ -83,6 +84,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
     targetLanguageCode,
     languagePairs,
     triggerKeyword,
+    autoTranslateClipboard: String(settings.autoTranslateClipboard).toLowerCase() === 'true',
     interfaceLanguage,
     deepL,
     deepLX,
