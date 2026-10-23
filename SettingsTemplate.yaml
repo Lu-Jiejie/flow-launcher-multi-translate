@@ -62,6 +62,32 @@ body:
 
       defaultValue: ''
 
+  - type: textarea
+    attributes:
+      name: openaiSystemPrompt
+      label: OpenAI System Prompt
+      description: >
+        Optional instructions for translation style, terminology, and output format.
+
+        Supports {from}, {to}, and {text}. Language placeholders use full English language names,
+        or 'auto' when the source language is automatically detected by the translation service.
+
+        Line breaks are preserved. Leave blank to use the built-in system prompt.
+      defaultValue: ''
+
+  - type: textarea
+    attributes:
+      name: openaiUserPrompt
+      label: OpenAI User Prompt
+      description: >
+        Optional translation request template. Supports {from}, {to}, and {text}.
+
+        Example: Translate the following text from {from} to {to}: {text}
+
+        Line breaks are preserved. Custom templates must include {text}; otherwise an error is shown
+        and no translation request is sent. Leave blank to use the built-in user prompt.
+      defaultValue: ''
+
   - type: input
     attributes:
       name: proxyUrl
