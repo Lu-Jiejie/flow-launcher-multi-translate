@@ -5,6 +5,7 @@ export interface Settings {
   requestTimeout: number
   translateDelay: number
   proxyUrl: string
+  translationMode: 'configured' | 'zh-en'
   sourceLanguageCode: LanguageCode
   targetLanguageCode: LanguageCode
   languagePairs: string[]
@@ -36,6 +37,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
   if (Number.isNaN(translateDelay))
     translateDelay = 700
   const proxyUrl = settings.proxyUrl || ''
+  const translationMode = settings.translationMode === 'Chinese ↔ English' ? 'zh-en' : 'configured'
   const sourceLanguageCode = settings.sourceLanguageCode as LanguageCode || 'auto'
   const targetLanguageCode = settings.targetLanguageCode as LanguageCode || 'zh'
   const languagePairs = (settings.languagePairs || '').split('\n').map(i => i.trim()).filter(i => i)
@@ -79,6 +81,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
     requestTimeout,
     translateDelay,
     proxyUrl,
+    translationMode,
     sourceLanguageCode,
     targetLanguageCode,
     languagePairs,
