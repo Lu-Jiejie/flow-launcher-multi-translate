@@ -45,6 +45,23 @@ jobs:
           pnpm run build
           rm -rf node_modules
           pnpm install --frozen-lockfile --prod --config.node-linker=hoisted
+
+      # tinyld ships a playground, a browser build and a heavy profile set that no code path loads,
+      # about 11 MB of the package. Only the light build is imported here, and Node needs the
+      # package.json to resolve the `tinyld/light` subpath, plus the .js variant for the CJS bundle.
+      - name: Prune unused tinyld files
+        run: |
+          cd node_modules/tinyld
+          find . -mindepth 1 -maxdepth 1 ! -name package.json ! -name dist -exec rm -rf {} +
+          cd dist
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name tinyld.light.node.mjs \
+            ! -name tinyld.light.node.js \
+            -exec rm -rf {} +
+          cd ../../..
+
+      - name: Package plugin
+        run: |
           zip -r MultiTranslate-${{steps.version.outputs.prop}}.zip . -x '*.git*'
 
       - run: npx changelogithub
