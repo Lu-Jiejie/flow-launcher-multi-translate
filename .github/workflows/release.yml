@@ -18,9 +18,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20.17.0
+          cache: pnpm
 
       - name: Get version
         id: version
@@ -31,12 +34,17 @@ jobs:
 
       - run: echo ${{steps.version.outputs.prop}}
 
+      # pnpm is the package manager this repository locks. Installing with npm ignored
+      # pnpm-lock.yaml and resolved a second, untested dependency tree.
+      # The hoisted linker is required because Flow Launcher loads node_modules from the zip, and
+      # pnpm's default layout is a symlink tree into a store that would not exist on the user's
+      # machine.
       - name: Install dependencies and build
         run: |
-          npm install
-          npm run build
+          pnpm install --frozen-lockfile --config.node-linker=hoisted
+          pnpm run build
           rm -rf node_modules
-          npm ci --only=production
+          pnpm install --frozen-lockfile --prod --config.node-linker=hoisted
           zip -r MultiTranslate-${{steps.version.outputs.prop}}.zip . -x '*.git*'
 
       - run: npx changelogithub
