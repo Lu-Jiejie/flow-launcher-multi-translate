@@ -96,6 +96,26 @@ body:
         Useful for avoiding rate limits on some services.
       defaultValue: '700'
 
+  - type: dropdown
+    attributes:
+      name: translationMode
+      label: Translation Mode
+      description: >
+        Configured direction uses the source and target language settings below.
+
+        Chinese ↔ English detects the main language locally and translates Chinese into English,
+        or English into Simplified Chinese. Mixed text follows the detected language.
+
+        If detection is inconclusive, text containing Chinese characters is translated into English;
+        otherwise it is translated into Simplified Chinese.
+
+        Explicit language prefixes (e.g. zh>fr, >en, en>) override this mode.
+        Omitted languages in a prefix still use the source and target settings below.
+      options:
+        - Configured direction
+        - Chinese ↔ English
+      defaultValue: Configured direction
+
   - type: input
     attributes:
       name: sourceLanguageCode
