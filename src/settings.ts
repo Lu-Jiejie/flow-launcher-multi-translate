@@ -25,6 +25,7 @@ export interface Settings {
     key: string
     baseUrl: string
     model: string
+    languagesMapJson: string
     systemPrompt: string
     userPrompt: string
   }
@@ -76,6 +77,7 @@ export function parseSettings(settings: Record<string, string>): Settings {
     key: serviceConfigs.OPENAI_API_KEY || '',
     baseUrl: serviceConfigs.OPENAI_BASE_URL || 'https://api.openai.com',
     model: serviceConfigs.OPENAI_MODEL || 'gpt-3.5-turbo',
+    languagesMapJson: settings.openaiLanguagesMap || '',
     systemPrompt: settings.openaiSystemPrompt || '',
     userPrompt: settings.openaiUserPrompt || '',
   }
