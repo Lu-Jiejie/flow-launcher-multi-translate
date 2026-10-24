@@ -131,14 +131,9 @@ export async function translate(
   axiosInstance: AxiosInstance,
   _options: Settings,
 ): Promise<string> {
-  const apiKey = _options.openAI.key
+  const apiKey = _options.openAI.key?.trim() || ''
   const baseUrl = _options.openAI.baseUrl
   const model = _options.openAI.model
-
-  // Validate required configuration
-  if (!apiKey || apiKey.trim() === '') {
-    return formatError(new Error('OpenAI: API key is not configured. Please set OPENAI_API_KEY in Service Configs.'))
-  }
 
   if (!model || model.trim() === '') {
     return formatError(new Error('OpenAI: Model is not configured. Please set OPENAI_MODEL in Service Configs.'))
@@ -169,7 +164,7 @@ export async function translate(
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
         },
       },
     )
