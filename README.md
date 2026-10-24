@@ -54,6 +54,18 @@ tr zh>fr [text]
 
 Just wait for the translation results, and select one of them to copy into the clipboard.
 
+### Chinese ↔ English mode
+
+Set **Translation Mode** to `Chinese ↔ English` to have the direction chosen for you: Chinese text
+is translated into English and English text into Chinese, so `tr [text]` is usually all you need.
+
+The direction is detected locally before any request is sent. Only Chinese and English are
+considered, so text in another language is treated as English input.
+
+> Note: in this mode a bare word is never read as a language code, because words such as `is`, `it`,
+> `to`, `my` and `he` are ordinary English words that also happen to be language codes. Use the
+> `>lang` form, for example `tr >fr [text]`, to force a target language.
+
 ## Configuration
 
 See Flow-Launcher plugin settings page.
@@ -89,6 +101,19 @@ OPENAI_MODEL=gpt-3.5-turbo
 
 > Note: `OPENAI_BASE_URL` defaults to `https://api.openai.com` if not set.
 > You can use other OpenAI-compatible API like [SiliconFlow](https://www.siliconflow.com/).
+
+> Note: `OPENAI_API_KEY` is optional. Leave it unset for OpenAI-compatible servers that do not
+> require authentication, such as a local Ollama or LM Studio instance; the `Authorization` header
+> is then omitted from the request.
+
+### OpenAI prompts and language names
+
++ **OpenAI System Prompt** and **OpenAI User Prompt** override the built-in messages. Both support
+  the `{from}`, `{to}` and `{text}` placeholders. A custom user prompt must contain `{text}`,
+  otherwise an error is shown and no request is sent.
++ **OpenAI Languages Map** overrides the language names used for `{from}` and `{to}`, as a JSON
+  object such as `{"zh": "简体中文", "en": "英语"}`. Languages you leave out keep their built-in
+  names.
 
 ## Language Codes List
 

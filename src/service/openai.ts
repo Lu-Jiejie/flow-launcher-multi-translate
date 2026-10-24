@@ -5,7 +5,7 @@ import { formatError } from '../utils'
 
 // OpenAI models support many languages through natural language understanding.
 // Using full language names for better prompt comprehension.
-export const languagesMap: LanguagesMap = {
+const languageNamesMap: LanguagesMap = {
   'auto': 'auto',
   'af': 'Afrikaans',
   'sq': 'Albanian',
@@ -124,6 +124,42 @@ export const languagesMap: LanguagesMap = {
   'zu': 'Zulu',
 }
 
+function renderPrompt(template: string, values: { from: string, to: string, text: string }): string {
+  // Replace in one pass so placeholders and dollar signs in the source text stay literal.
+  return template.replace(/\{(from|to|text)\}/g, (_, key: keyof typeof values) => values[key])
+}
+
+// Resolve names inside the adapter so per-query settings can override them.
+export const languagesMap: LanguagesMap = Object.fromEntries(
+  Object.keys(languageNamesMap).map(code => [code, code]),
+)
+
+function parseLanguageNames(json: string): LanguagesMap {
+  if (!json.trim())
+    return {}
+
+  let names: unknown
+  try {
+    names = JSON.parse(json)
+  }
+  catch {
+    throw new Error('OpenAI Languages Map must be valid JSON.')
+  }
+
+  if (names === null || typeof names !== 'object' || Array.isArray(names))
+    throw new Error('OpenAI Languages Map must be a JSON object mapping language codes to names.')
+
+  const supportedCodes = Object.keys(languageNamesMap)
+  for (const [code, name] of Object.entries(names)) {
+    if (!supportedCodes.includes(code))
+      throw new Error(`OpenAI Languages Map contains an unsupported language code: ${code}`)
+    if (typeof name !== 'string' || !name.trim())
+      throw new Error(`OpenAI Languages Map requires a non-empty name for ${code}.`)
+  }
+
+  return names as LanguagesMap
+}
+
 export async function translate(
   text: string,
   from: string,
@@ -131,22 +167,35 @@ export async function translate(
   axiosInstance: AxiosInstance,
   _options: Settings,
 ): Promise<string> {
-  const apiKey = _options.openAI.key
+  const apiKey = _options.openAI.key?.trim() || ''
   const baseUrl = _options.openAI.baseUrl
   const model = _options.openAI.model
-
-  // Validate required configuration
-  if (!apiKey || apiKey.trim() === '') {
-    return formatError(new Error('OpenAI: API key is not configured. Please set OPENAI_API_KEY in Service Configs.'))
-  }
 
   if (!model || model.trim() === '') {
     return formatError(new Error('OpenAI: Model is not configured. Please set OPENAI_MODEL in Service Configs.'))
   }
 
-  // Map language codes to full language names for better prompt understanding
-  const fromLang = (languagesMap as Record<string, string>)[from] || from
-  const toLang = (languagesMap as Record<string, string>)[to] || to
+  let customNames: LanguagesMap
+  try {
+    customNames = parseLanguageNames(_options.openAI.languagesMapJson || '')
+  }
+  catch (error) {
+    return formatError(error)
+  }
+  const names: Record<string, string | undefined> = { ...languageNamesMap, ...customNames }
+  const fromLang = names[from] || from
+  const toLang = names[to] || to
+  const { systemPrompt, userPrompt } = _options.openAI
+  const systemTemplate = systemPrompt?.trim()
+    ? systemPrompt
+    : 'You are a professional translation assistant. Translate the given text accurately and naturally. Only return the translated text without any explanations or additional content.'
+  const userTemplate = userPrompt?.trim()
+    ? userPrompt
+    : 'Translate the following text from {from} to {to}:\n\n{text}'
+  if (!userTemplate.includes('{text}')) {
+    return formatError(new Error('OpenAI: Custom user prompt must include {text}. Please update OpenAI User Prompt in the plugin settings.'))
+  }
+  const promptValues = { from: fromLang, to: toLang, text }
 
   try {
     const response = await axiosInstance.post(
@@ -156,11 +205,11 @@ export async function translate(
         messages: [
           {
             role: 'system',
-            content: `You are a professional translation assistant. Translate the given text accurately and naturally. Only return the translated text without any explanations or additional content.`,
+            content: renderPrompt(systemTemplate, promptValues),
           },
           {
             role: 'user',
-            content: `Translate the following text from ${fromLang} to ${toLang}:\n\n${text}`,
+            content: renderPrompt(userTemplate, promptValues),
           },
         ],
         temperature: 0.3,
@@ -169,7 +218,7 @@ export async function translate(
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
         },
       },
     )

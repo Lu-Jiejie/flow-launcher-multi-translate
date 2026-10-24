@@ -7,7 +7,9 @@ import { languagesMap as googleLanguages, translate as googleTranslate } from '.
 import { languagesMap as mTranServerLanguages, translate as mTranServerTranslate } from '../src/service/MTranServer'
 import { languagesMap as youdaoLanguages, translate as youdaoTranslate } from '../src/service/youdao'
 
-describe('translate', () => {
+// These cases reach a live service or a locally running MTranServer, so they are skipped by
+// default. Run them on purpose while working on an adapter: pnpm test -- --run -t translate
+describe.skip('translate', () => {
   it.skip('deeplx', async () => {
     const res = await deeplxTranslate(
       'an apple a day keeps the doctor away. an banana a day keeps you away from everyone.',
@@ -55,7 +57,7 @@ describe('translate', () => {
     expect(res).toMatchInlineSnapshot(`"{}"`)
   })
 
-  it.only('mTranServer', async () => {
+  it('mTranServer', async () => {
     const res = await mTranServerTranslate(
       'an apple a day keeps the doctor away. an banana a day keeps you away from everyone.',
       mTranServerLanguages.en!,

@@ -2,9 +2,13 @@ import type { AxiosInstance } from 'axios'
 import type { LanguageCode } from './service/language'
 import type { Settings } from './settings'
 import path from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import clipboard from 'clipboardy'
 import { Flow } from 'flow-plugin'
+// The light build is restricted to the languages detected below and starts far faster, which
+// matters because Flow Launcher spawns this module for every keystroke.
+import { detect } from 'tinyld/light'
 import { createAxiosInstance } from './axios'
 import { logger } from './logger'
 import { serviceNamesMap } from './service'
@@ -23,6 +27,7 @@ const messagesMap: Record<string, { en: string, tr: string, zh: string }> = {
   noServicesConfigured: { en: 'No services configured', tr: 'Yapılandırılmış hizmet yok', zh: '未配置翻译服务' },
   noServicesConfiguredSubtitle: { en: 'Please check your configuration.', tr: 'Lütfen yapılandırmanızı kontrol edin.', zh: '请检查您的配置。' },
   defaultSelected: { en: 'Default selected: ', tr: 'Varsayılan seçili: ', zh: '默认选择: ' },
+  automaticDirection: { en: 'Detect Chinese or English and translate into the other language', tr: 'Çince veya İngilizceyi algıla ve diğer dile çevir', zh: '自动识别中英文，翻译为另一种语言' },
   quickSelect: { en: 'Quick select: ', tr: 'Hızlı seçim: ', zh: '快速选择: ' },
 }
 
@@ -46,6 +51,7 @@ function main() {
   flow.on('query', async ({ prompt, settings: rawSettings }, response) => {
     const settings = parseSettings(rawSettings as any)
     const { interfaceLanguage } = settings
+    const showAutomaticDirection = settings.translationMode === 'zh-en' && prompt.trim().length === 0
 
     const axiosInstance = getAxiosInstance(settings)
 
@@ -58,8 +64,11 @@ function main() {
       })
       return
     }
+    // The configured direction is unused in the Chinese ↔ English mode, where it is detected from
+    // the text, so a stale or invalid code must not block translation there.
+    const useConfiguredDirection = settings.translationMode !== 'zh-en'
     // unsupported source language
-    if (languageNamesMap[settings.sourceLanguageCode] === undefined) {
+    if (useConfiguredDirection && languageNamesMap[settings.sourceLanguageCode] === undefined) {
       flow.add({
         title: `${messagesMap.unsupportedSourceLanguage[interfaceLanguage]} ${settings.sourceLanguageCode}`,
         subtitle: messagesMap.unsupportedSourceLanguageSubtitle[interfaceLanguage],
@@ -68,7 +77,7 @@ function main() {
       return
     }
     // unsupported target language
-    if (languageNamesMap[settings.targetLanguageCode] === undefined) {
+    if (useConfiguredDirection && languageNamesMap[settings.targetLanguageCode] === undefined) {
       flow.add({
         title: `${messagesMap.unsupportedTargetLanguage[interfaceLanguage]} ${settings.targetLanguageCode}`,
         subtitle: messagesMap.unsupportedTargetLanguageSubtitle[interfaceLanguage],
@@ -94,8 +103,12 @@ function main() {
 
       response.add(
         {
-          title: `${languageNamesMap[settings.sourceLanguageCode][interfaceLanguage]} → ${languageNamesMap[settings.targetLanguageCode][interfaceLanguage]}`,
-          subtitle: `${messagesMap.defaultSelected[interfaceLanguage]} ${settings.sourceLanguageCode} → ${settings.targetLanguageCode}`,
+          title: showAutomaticDirection
+            ? `${languageNamesMap.zh[interfaceLanguage]} ↔ ${languageNamesMap.en[interfaceLanguage]}`
+            : `${languageNamesMap[settings.sourceLanguageCode][interfaceLanguage]} → ${languageNamesMap[settings.targetLanguageCode][interfaceLanguage]}`,
+          subtitle: showAutomaticDirection
+            ? messagesMap.automaticDirection[interfaceLanguage]
+            : `${messagesMap.defaultSelected[interfaceLanguage]} ${settings.sourceLanguageCode} → ${settings.targetLanguageCode}`,
           icoPath: `${assetsPath}/info.png`,
         },
         ...validPairs.map((pair) => {
@@ -114,11 +127,20 @@ function main() {
     }
 
     // parse prompt to prefix and text
-    const { sourceLanguageCode, targetLanguageCode, text } = parsePrompt(prompt, settings.sourceLanguageCode, settings.targetLanguageCode)
+    const { sourceLanguageCode, targetLanguageCode, text } = parsePrompt(
+      prompt,
+      settings.sourceLanguageCode,
+      settings.targetLanguageCode,
+      settings.translationMode === 'zh-en',
+    )
     if (!text || text.trim().length === 0) {
       response.add({
-        title: `${languageNamesMap[sourceLanguageCode][interfaceLanguage]} → ${languageNamesMap[targetLanguageCode][interfaceLanguage]}`,
-        subtitle: `${messagesMap.defaultSelected[interfaceLanguage]} ${sourceLanguageCode} → ${targetLanguageCode}`,
+        title: showAutomaticDirection
+          ? `${languageNamesMap.zh[interfaceLanguage]} ↔ ${languageNamesMap.en[interfaceLanguage]}`
+          : `${languageNamesMap[sourceLanguageCode][interfaceLanguage]} → ${languageNamesMap[targetLanguageCode][interfaceLanguage]}`,
+        subtitle: showAutomaticDirection
+          ? messagesMap.automaticDirection[interfaceLanguage]
+          : `${messagesMap.defaultSelected[interfaceLanguage]} ${sourceLanguageCode} → ${targetLanguageCode}`,
         icoPath: `${assetsPath}/info.png`,
       })
       return
@@ -173,6 +195,7 @@ export function parsePrompt(
   prompt: string,
   oldSourceLanguageCode: LanguageCode,
   oldTargetLanguageCode: LanguageCode,
+  chineseEnglishTranslation = false,
 ): {
     sourceLanguageCode: LanguageCode
     targetLanguageCode: LanguageCode
@@ -182,7 +205,7 @@ export function parsePrompt(
   const spaceIndex = prompt.indexOf(' ')
 
   // prefix too long seems like a text
-  if (spaceIndex > 15) {
+  if (spaceIndex > 15 && !chineseEnglishTranslation) {
     return {
       sourceLanguageCode: oldSourceLanguageCode,
       targetLanguageCode: oldTargetLanguageCode,
@@ -233,7 +256,13 @@ export function parsePrompt(
   }
 
   // Part 3: B or >B
-  const match3 = prefix.match(/^>?([a-z_]+)$/)
+  // In the Chinese ↔ English mode a bare word must stay text: `is`, `it`, `to`, `my`, `he`, `hi`,
+  // `so`, `am`, `as`, `or` and `id` are ordinary English words that are also language codes, so
+  // reading them as a target language misdirects most English sentences. Only the unambiguous
+  // `>B` form is honored there.
+  const match3 = chineseEnglishTranslation
+    ? prefix.match(/^>([a-z_]+)$/)
+    : prefix.match(/^>?([a-z_]+)$/)
   if (match3) {
     const [_, target] = match3
     if (languageCodesArr.includes(target as any)) {
@@ -245,6 +274,19 @@ export function parsePrompt(
     }
   }
 
+  if (chineseEnglishTranslation && prompt.trim().length > 0) {
+    // Restrict detection so short English words are not mistaken for other languages.
+    const detected = detect(prompt, { only: ['zh', 'en'] })
+    const source = detected === 'zh' || detected === 'en'
+      ? detected
+      : /\p{Script=Han}/u.test(prompt) ? 'zh' : 'en'
+    return {
+      sourceLanguageCode: source,
+      targetLanguageCode: source === 'zh' ? 'en' : 'zh',
+      text: prompt,
+    }
+  }
+
   // Default case
   return {
     sourceLanguageCode: oldSourceLanguageCode,
@@ -253,4 +295,8 @@ export function parsePrompt(
   }
 }
 
-main()
+// Flow Launcher passes the request as the first argument of a fresh process. Tests import
+// `parsePrompt` from this module without that argument, so the runtime only starts when the
+// module is actually being driven by the launcher.
+if (process.argv[2] !== undefined)
+  main()

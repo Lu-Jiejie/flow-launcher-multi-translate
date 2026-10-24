@@ -56,10 +56,51 @@ body:
 
         OPENAI_API_KEY=sk-xxxx
 
+        The API key is optional for services that do not require authentication.
+
         OPENAI_BASE_URL=https://api.openai.com
 
         OPENAI_MODEL=gpt-3.5-turbo
 
+      defaultValue: ''
+
+  - type: textarea
+    attributes:
+      name: openaiLanguagesMap
+      label: OpenAI Languages Map
+      description: >
+        Optional JSON object overriding the language names used in OpenAI translation requests.
+
+        Example: {"zh":"简体中文","en":"英语"}
+
+        Keys must be supported language codes (including 'auto'); values must be non-empty strings.
+        Omitted languages keep their built-in names. Leave blank to use all built-in names.
+      defaultValue: ''
+
+  - type: textarea
+    attributes:
+      name: openaiSystemPrompt
+      label: OpenAI System Prompt
+      description: >
+        Optional instructions for translation style, terminology, and output format.
+
+        Supports {from}, {to}, and {text}. Language placeholders use full English language names,
+        or 'auto' when the source language is automatically detected by the translation service.
+
+        Line breaks are preserved. Leave blank to use the built-in system prompt.
+      defaultValue: ''
+
+  - type: textarea
+    attributes:
+      name: openaiUserPrompt
+      label: OpenAI User Prompt
+      description: >
+        Optional translation request template. Supports {from}, {to}, and {text}.
+
+        Example: Translate the following text from {from} to {to}: {text}
+
+        Line breaks are preserved. Custom templates must include {text}; otherwise an error is shown
+        and no translation request is sent. Leave blank to use the built-in user prompt.
       defaultValue: ''
 
   - type: input
@@ -93,6 +134,26 @@ body:
 
         Useful for avoiding rate limits on some services.
       defaultValue: '700'
+
+  - type: dropdown
+    attributes:
+      name: translationMode
+      label: Translation Mode
+      description: >
+        Configured direction uses the source and target language settings below.
+
+        Chinese ↔ English detects the main language locally and translates Chinese into English,
+        or English into Simplified Chinese. Mixed text follows the detected language.
+
+        If detection is inconclusive, text containing Chinese characters is translated into English;
+        otherwise it is translated into Simplified Chinese.
+
+        Explicit language prefixes (e.g. zh>fr, >en, en>) override this mode.
+        Omitted languages in a prefix still use the source and target settings below.
+      options:
+        - Configured direction
+        - Chinese ↔ English
+      defaultValue: Configured direction
 
   - type: input
     attributes:
