@@ -124,6 +124,11 @@ export const languagesMap: LanguagesMap = {
   'zu': 'Zulu',
 }
 
+function renderPrompt(template: string, values: { from: string, to: string, text: string }): string {
+  // Replace in one pass so placeholders and dollar signs in the source text stay literal.
+  return template.replace(/\{(from|to|text)\}/g, (_, key: keyof typeof values) => values[key])
+}
+
 export async function translate(
   text: string,
   from: string,
@@ -142,6 +147,17 @@ export async function translate(
   // Map language codes to full language names for better prompt understanding
   const fromLang = (languagesMap as Record<string, string>)[from] || from
   const toLang = (languagesMap as Record<string, string>)[to] || to
+  const { systemPrompt, userPrompt } = _options.openAI
+  const systemTemplate = systemPrompt?.trim()
+    ? systemPrompt
+    : 'You are a professional translation assistant. Translate the given text accurately and naturally. Only return the translated text without any explanations or additional content.'
+  const userTemplate = userPrompt?.trim()
+    ? userPrompt
+    : 'Translate the following text from {from} to {to}:\n\n{text}'
+  if (!userTemplate.includes('{text}')) {
+    return formatError(new Error('OpenAI: Custom user prompt must include {text}. Please update OpenAI User Prompt in the plugin settings.'))
+  }
+  const promptValues = { from: fromLang, to: toLang, text }
 
   try {
     const response = await axiosInstance.post(
@@ -151,11 +167,11 @@ export async function translate(
         messages: [
           {
             role: 'system',
-            content: `You are a professional translation assistant. Translate the given text accurately and naturally. Only return the translated text without any explanations or additional content.`,
+            content: renderPrompt(systemTemplate, promptValues),
           },
           {
             role: 'user',
-            content: `Translate the following text from ${fromLang} to ${toLang}:\n\n${text}`,
+            content: renderPrompt(userTemplate, promptValues),
           },
         ],
         temperature: 0.3,
