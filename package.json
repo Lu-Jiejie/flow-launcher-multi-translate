@@ -1,7 +1,7 @@
 {
   "name": "multitranslate",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "packageManager": "pnpm@10.12.1",
   "description": "A Flow-Launcher plugin that translates text using multiple translation services.",
   "author": "Lu-Jiejie <lu-jiejie@outlook.com>",
