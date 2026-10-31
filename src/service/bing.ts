@@ -112,6 +112,8 @@ export const languagesMap: LanguagesMap = {
   ms: 'ms',
   ar: 'ar',
   hi: 'hi',
+  bn: 'bn',
+  ur: 'ur',
   ml: 'ml',
   mn_cy: 'mn-Cyrl',
   km: 'km',

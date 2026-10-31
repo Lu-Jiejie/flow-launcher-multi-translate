@@ -237,6 +237,9 @@ export async function translate(
 }
 
 // https://cloud.google.com/translate/docs/languages?hl=zh-cn
+//
+// This map is a curated subset: a language that is missing here is reported as unsupported even
+// when Google translates it. Bengali and Urdu were missing, which is what issue #18 reported.
 export const languagesMap: LanguagesMap = {
   auto: 'auto',
   zh: 'zh-CN',
@@ -259,6 +262,8 @@ export const languagesMap: LanguagesMap = {
   ms: 'ms',
   ar: 'ar',
   hi: 'hi',
+  bn: 'bn',
+  ur: 'ur',
   ml: 'ml',
   mn_cy: 'mn',
   mn_mo: 'mn',

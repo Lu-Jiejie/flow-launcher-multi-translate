@@ -1,9 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import { languagesMap as bingLanguages, buildTranslateUrl, parseTranslationResult } from '../src/service/bing'
-import { parseBatchexecuteResponse, parseGtxResponse } from '../src/service/google'
+import { languagesMap as googleLanguages, parseBatchexecuteResponse, parseGtxResponse } from '../src/service/google'
 
 // The payload snippets below are trimmed copies of what the live services actually return, so these
 // tests keep working without network access.
+
+// A language missing from a service's `languagesMap` is reported as unsupported even when the
+// service translates it, which is what issue #18 hit for Bengali and Urdu on Google.
+describe('service language maps', () => {
+  it('maps Bengali and Urdu for Google', () => {
+    expect(googleLanguages.bn).toBe('bn')
+    expect(googleLanguages.ur).toBe('ur')
+  })
+
+  it('maps Bengali and Urdu for Bing', () => {
+    expect(bingLanguages.bn).toBe('bn')
+    expect(bingLanguages.ur).toBe('ur')
+  })
+})
 
 describe('bing', () => {
   it('asks the token-free endpoint for a translation', () => {
